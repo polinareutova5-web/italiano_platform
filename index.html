@@ -264,6 +264,37 @@
             margin-bottom: 30px;
         }
 
+        /* СЕТКА ВАРИАНТОВ ОТВЕТА (ДЛЯ ТИПА CHOICE) */
+        .choices-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #1b4332 !important;
+            border: 3px solid #74c69d !important;
+            padding: 20px !important;
+            font-size: 20px !important;
+            font-weight: bold !important;
+            border-radius: 15px !important;
+            cursor: pointer;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15) !important;
+            text-shadow: none !important;
+        }
+        .choice-btn:hover {
+            transform: translateY(-3px) !important;
+            border-color: #2d6a4f !important;
+            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.3) !important;
+            background: rgba(255, 255, 255, 1) !important;
+        }
+        .choice-btn:active { transform: translateY(0) !important; }
+        .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -300,7 +331,6 @@
             
             input, textarea, select { font-size: 16px; padding: 14px; }
             
-            /* Мобильная версия игры */
             .game-modal-content { padding: 15px; }
             .game-modal-header { padding: 0 10px; margin-bottom: 20px; }
             .game-task-box { padding: 25px; margin-bottom: 20px; }
@@ -310,6 +340,9 @@
             .game-feedback { font-size: 16px; }
             .game-result h2 { font-size: 28px; }
             .game-result-score { font-size: 20px; }
+
+            .choices-grid { gap: 10px; }
+            .choice-btn { padding: 15px !important; font-size: 18px !important; }
         }
         
         @media (max-width: 480px) {
@@ -318,6 +351,8 @@
             }
             .level-num { font-size: 20px; }
             .game-task-word { font-size: 32px; }
+            .choices-grid { grid-template-columns: 1fr; }
+            .choice-btn { font-size: 16px !important; }
         }
     </style>
 </head>
@@ -372,7 +407,11 @@
             <input type="text" id="addBlock" placeholder="Название блока (напр. 'Famiglia')">
             <input type="text" id="addWord" placeholder="Слово на итальянском">
             <input type="text" id="addTask" placeholder="Перевод на русский">
-            <button onclick="addContent('addGameContent', ['addLevel', 'addBlock', 'addWord', 'addTask'])">Добавить в игру</button>
+            <select id="addType">
+                <option value="input">Ввод слова (пользователь печатает)</option>
+                <option value="choice">Выбор из вариантов</option>
+            </select>
+            <button onclick="addGameContent()">Добавить в игру</button>
             
             <hr>
             
@@ -394,7 +433,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzGGfojhQgNSv-Z0Vg2gArFWGyh3h5cSw61kvkiC4wMliSqkb9aN4O8m5uhhKPDd86Z/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwoBcpOHbsYIyrogIEbNO8Hz05Go_2EhfTl0KcKBNi1Y9-fVQdSZ3M59-RR6EETTVgi1Q/exec";
     let currentUserRole = 'user';
 
     async function doLogin() {
@@ -501,6 +540,17 @@
         let currentTaskIndex = 0;
         let score = 0;
         
+        // Функция для генерации вариантов ответа (для типа choice)
+        function generateChoices(correctWord, allTasks) {
+            const otherWords = allTasks
+                .filter(t => t.word.toLowerCase() !== correctWord.toLowerCase())
+                .map(t => t.word);
+            
+            const shuffled = otherWords.sort(() => Math.random() - 0.5).slice(0, 3);
+            shuffled.push(correctWord);
+            return shuffled.sort(() => Math.random() - 0.5);
+        }
+        
         function renderTask() {
             if (currentTaskIndex >= tasks.length) {
                 modal.innerHTML = `
@@ -522,6 +572,37 @@
             }
             
             const task = tasks[currentTaskIndex];
+            const taskType = (task.type || 'input').toString().trim().toLowerCase();
+            
+            let taskContent = '';
+            
+            if (taskType === 'choice') {
+                const choices = generateChoices(task.word, tasks);
+                const buttonsHtml = choices.map(word => 
+                    `<button class="choice-btn" onclick="checkChoice(this, '${word.replace(/'/g, "\\'")}', '${task.word.replace(/'/g, "\\'")}')">${word}</button>`
+                ).join('');
+                
+                taskContent = `
+                    <div class="game-task-box">
+                        <div class="game-task-label">Выберите правильный перевод:</div>
+                        <p class="game-task-word">${task.task}</p>
+                    </div>
+                    <div class="choices-grid">
+                        ${buttonsHtml}
+                    </div>
+                    <div id="feedback" class="game-feedback"></div>
+                `;
+            } else {
+                taskContent = `
+                    <div class="game-task-box">
+                        <div class="game-task-label">Напишите по-итальянски:</div>
+                        <p class="game-task-word">${task.task}</p>
+                    </div>
+                    <input type="text" id="userAnswer" class="game-input" placeholder="Введите слово на итальянском...">
+                    <div id="feedback" class="game-feedback"></div>
+                    <button onclick="checkInput()" style="width: 100%; max-width: 300px;">Проверить</button>
+                `;
+            }
             
             modal.innerHTML = `
                 <div class="game-modal-header">
@@ -532,28 +613,24 @@
                     <div class="game-progress">
                         Задание ${currentTaskIndex + 1} из ${tasks.length}
                     </div>
-                    
-                    <div class="game-task-box">
-                        <div class="game-task-label">Напишите по-итальянски:</div>
-                        <p class="game-task-word">${task.task}</p>
-                    </div>
-                    
-                    <input type="text" id="userAnswer" class="game-input" placeholder="Введите слово на итальянском...">
-                    
-                    <div id="feedback" class="game-feedback"></div>
-                    
-                    <button onclick="checkAnswer()" style="width: 100%; max-width: 300px;">Проверить</button>
+                    ${taskContent}
                 </div>
             `;
             
-            setTimeout(() => document.getElementById('userAnswer').focus(), 100);
-            
-            document.getElementById('userAnswer').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') checkAnswer();
-            });
+            if (taskType !== 'choice') {
+                setTimeout(() => {
+                    const input = document.getElementById('userAnswer');
+                    if (input) {
+                        input.focus();
+                        input.addEventListener('keypress', (e) => {
+                            if (e.key === 'Enter') checkInput();
+                        });
+                    }
+                }, 100);
+            }
         }
         
-        window.checkAnswer = function() {
+        window.checkInput = function() {
             const userAnswer = document.getElementById('userAnswer').value.trim().toLowerCase();
             const correctAnswer = tasks[currentTaskIndex].word.toLowerCase();
             const feedback = document.getElementById('feedback');
@@ -566,6 +643,33 @@
                 feedback.innerHTML = `<span style="color: #ce2b37;">❌ Неправильно. Правильный ответ: <b>${tasks[currentTaskIndex].word}</b></span>`;
                 setTimeout(() => { currentTaskIndex++; renderTask(); }, 2000);
             }
+        };
+        
+        window.checkChoice = function(button, selected, correct) {
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.querySelectorAll('.choice-btn');
+            
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.pointerEvents = 'none';
+                if (btn.textContent === correct) {
+                    btn.style.background = 'linear-gradient(135deg, #52b788, #74c69d) !important';
+                    btn.style.color = 'white !important';
+                    btn.style.transform = 'scale(1.05)';
+                }
+            });
+            
+            if (selected === correct) {
+                score++;
+                button.style.background = 'linear-gradient(135deg, #52b788, #74c69d) !important';
+                feedback.innerHTML = '<span style="color: #1b4332;">✅ Правильно!</span>';
+            } else {
+                button.style.background = 'linear-gradient(135deg, #ce2b37, #e63946) !important';
+                button.style.color = 'white !important';
+                feedback.innerHTML = `<span style="color: #ce2b37;">❌ Неправильно. Правильный ответ: <b>${correct}</b></span>`;
+            }
+            
+            setTimeout(() => { currentTaskIndex++; renderTask(); }, 1500);
         };
         
         document.body.appendChild(modal);
@@ -594,15 +698,29 @@
         });
     }
 
-    async function addContent(action, fields) {
-        let payload = { action };
-        if(action === 'addGameContent') payload = { action, level: document.getElementById('addLevel').value, block: document.getElementById('addBlock').value, word: document.getElementById('addWord').value, task: document.getElementById('addTask').value };
-        if(action === 'addLesson') payload = { action, title: document.getElementById('addLessonTitle').value, link: document.getElementById('addLessonLink').value };
-        if(action === 'addMaterial') payload = { action, title: document.getElementById('addMatTitle').value, content: document.getElementById('addMatContent').value };
-
+    // Специальная функция для добавления игры (с типом задания)
+    async function addGameContent() {
+        const payload = {
+            action: 'addGameContent',
+            level: document.getElementById('addLevel').value,
+            block: document.getElementById('addBlock').value,
+            word: document.getElementById('addWord').value,
+            task: document.getElementById('addTask').value,
+            type: document.getElementById('addType').value
+        };
         const res = await fetchAPI(payload);
         document.getElementById('adminMsg').innerText = '✅ ' + (res.message || 'Готово!');
+        ['addLevel', 'addBlock', 'addWord', 'addTask'].forEach(id => document.getElementById(id).value = '');
+    }
+
+    // Универсальная функция для уроков и материалов
+    async function addContent(action, fields) {
+        let payload = { action };
+        if(action === 'addLesson') payload = { action, title: document.getElementById('addLessonTitle').value, link: document.getElementById('addLessonLink').value };
+        if(action === 'addMaterial') payload = { action, title: document.getElementById('addMatTitle').value, content: document.getElementById('addMatContent').value };
         
+        const res = await fetchAPI(payload);
+        document.getElementById('adminMsg').innerText = '✅ ' + (res.message || 'Готово!');
         fields.forEach(f => document.getElementById(f).value = '');
     }
 
