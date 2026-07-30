@@ -730,7 +730,7 @@
     }
 
     res.data.forEach(item => {
-        // Умная очистка ключей
+        // Умная очистка ключей (убираем пробелы и приводим к нижнему регистру)
         const cleanItem = {};
         for (const key in item) {
             const cleanKey = String(key).trim().toLowerCase();
@@ -741,8 +741,10 @@
         div.className = 'list-item';
 
         if (type === 'lesson') {
-            const title = cleanItem.title || 'Без названия';
-            const link = cleanItem.link || '#';
+            // Понимает и title, и Название
+            const title = cleanItem.title || cleanItem.название || 'Без названия';
+            const link = cleanItem.link || cleanItem.ссылка || '#';
+            
             div.innerHTML = `
                 <span><b>${title}</b></span>
                 <a href="${link}" target="_blank" style="text-decoration: none;">
@@ -750,14 +752,13 @@
                 </a>
             `;
         } else {
-            // МАТЕРИАЛЫ — с кнопкой предпросмотра
-            const title = cleanItem.title || 'Без названия';
-            const content = cleanItem.content || '';
+            // МАТЕРИАЛЫ
+            const title = cleanItem.title || cleanItem.название || 'Без названия';
+            const content = cleanItem.content || cleanItem.текст || '';
             
-            // Определяем тип контента
             let materialType = 'text';
-            if (content.startsWith('http://') || content.startsWith('https://')) {
-                if (content.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+            if (String(content).startsWith('http://') || String(content).startsWith('https://')) {
+                if (String(content).match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
                     materialType = 'image';
                 } else {
                     materialType = 'link';
@@ -772,12 +773,14 @@
                           materialType === 'link' ? '🔗 Внешняя ссылка' : '📝 Текст'}
                     </small>
                 </div>
-                <button onclick="openMaterial('${title.replace(/'/g, "\\'")}', '${content.replace(/'/g, "\\'")}', '${materialType}')">
+                <button onclick="openMaterial('${title.replace(/'/g, "\\'")}', '${String(content).replace(/'/g, "\\'")}', '${materialType}')">
                     ${materialType === 'link' ? 'Открыть' : 'Просмотр'}
                 </button>
             `;
-            container.appendChild(div);
         }
+        
+        // ✅ ВАЖНО: эта строка теперь ЗДЕСЬ, чтобы добавлять и уроки, и материалы
+        container.appendChild(div);
     });
 }
     // Открытие материала в модальном окне
