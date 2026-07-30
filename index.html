@@ -360,26 +360,136 @@
     }
 
     // --- ЗАГРУЗКА ДАННЫХ ---
-    async function loadGameMap() {
-        const res = await fetchAPI({ action: 'getData', table: 'Game' });
-        const container = document.getElementById('gameMapContainer');
-        container.innerHTML = '';
+    // --- ЗАГРУЗКА КАРТЫ УРОВНЕЙ ---
+async function loadGameMap() {
+    const res = await fetchAPI({ action: 'getData', table: 'Game' });
+    const container = document.getElementById('gameMapContainer');
+    container.innerHTML = '';
+    
+    for (let i = 1; i <= 100; i++) {
+        const levelTasks = res.data.filter(d => parseInt(d.level) === i);
+        const hasTasks = levelTasks.length > 0;
         
-        for (let i = 1; i <= 100; i++) {
-            const levelTasks = res.data.filter(d => parseInt(d.level) === i);
-            const hasTasks = levelTasks.length > 0;
-            
-            const card = document.createElement('div');
-            card.className = `level-card ${hasTasks ? '' : 'locked'}`;
-            card.innerHTML = `
-                <div class="level-num">${i}</div>
-                <div class="level-block">${hasTasks ? levelTasks[0].block : '🔒 Закрыто'}</div>
-            `;
-            if(hasTasks) {
-                card.onclick = () => alert(`Уровень ${i}\nБлок: ${levelTasks[0].block}\nСлова: ${levelTasks.map(t=>t.word).join(', ')}`);
-            }
-            container.appendChild(card);
+        const card = document.createElement('div');
+        card.className = `level-card ${hasTasks ? '' : 'locked'}`;
+        card.innerHTML = `
+            <div class="level-num">${i}</div>
+            <div class="level-block">${hasTasks ? levelTasks[0].block : '🔒 Закрыто'}</div>
+        `;
+        if(hasTasks) {
+            card.onclick = () => openLevel(i, levelTasks);
         }
+        container.appendChild(card);
+    }
+}
+
+// --- ОТКРЫТИЕ УРОВНЯ С ЗАДАНИЯМИ ---
+function openLevel(levelNum, tasks) {
+    // Создаём модальное окно
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(27, 67, 50, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+    
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+        background: linear-gradient(135deg, #d4edda, #a8d5ba);
+        padding: 30px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    `;
+    
+    let currentTaskIndex = 0;
+    let score = 0;
+    
+    function renderTask() {
+        if (currentTaskIndex >= tasks.length) {
+            // Все задания выполнены
+            modalContent.innerHTML = `
+                <h2 style="color: #1b4332; text-align: center;">🎉 Уровень пройден!</h2>
+                <p style="text-align: center; font-size: 18px; color: #2d6a4f;">
+                    Правильных ответов: ${score} из ${tasks.length}
+                </p>
+                <button onclick="this.closest('div[style]').remove()" style="width: 100%; margin-top: 20px;">Закрыть</button>
+            `;
+            return;
+        }
+        
+        const task = tasks[currentTaskIndex];
+        
+        modalContent.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #1b4332; margin: 0;">Уровень ${levelNum}</h2>
+                <span style="color: #2d6a4f; font-size: 14px;">Задание ${currentTaskIndex + 1} из ${tasks.length}</span>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                <p style="font-size: 16px; color: #2d6a4f; margin: 0 0 10px 0;">Напишите по-английски:</p>
+                <p style="font-size: 32px; color: #1b4332; font-weight: bold; margin: 0;">${task.task}</p>
+            </div>
+            
+            <input type="text" id="userAnswer" placeholder="Введите слово на английском..." 
+                   style="width: 100%; padding: 15px; font-size: 18px; text-align: center;">
+            
+            <div id="feedback" style="text-align: center; margin: 15px 0; min-height: 30px;"></div>
+            
+            <button onclick="checkAnswer()" style="width: 100%;">Проверить</button>
+        `;
+        
+        // Фокус на поле ввода
+        setTimeout(() => document.getElementById('userAnswer').focus(), 100);
+        
+        // Проверка по Enter
+        document.getElementById('userAnswer').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkAnswer();
+        });
+    }
+    
+    // Функция проверки ответа (глобальная для модального окна)
+    window.checkAnswer = function() {
+        const userAnswer = document.getElementById('userAnswer').value.trim().toLowerCase();
+        const correctAnswer = tasks[currentTaskIndex].word.toLowerCase();
+        const feedback = document.getElementById('feedback');
+        
+        if (userAnswer === correctAnswer) {
+            score++;
+            feedback.innerHTML = '<span style="color: #1b4332; font-weight: bold;">✅ Правильно!</span>';
+            setTimeout(() => {
+                currentTaskIndex++;
+                renderTask();
+            }, 1000);
+        } else {
+            feedback.innerHTML = `<span style="color: #ce2b37; font-weight: bold;">❌ Неправильно. Правильный ответ: <b>${tasks[currentTaskIndex].word}</b></span>`;
+            setTimeout(() => {
+                currentTaskIndex++;
+                renderTask();
+            }, 2000);
+        }
+    };
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Закрытие по клику на фон
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    renderTask();
+}
     }
 
     async function loadList(tableName, containerId, type) {
