@@ -314,6 +314,65 @@
         .choice-btn:active { transform: translateY(0) !important; }
         .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
 
+        .chat-history {
+    height: 450px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid rgba(116, 198, 157, 0.3);
+}
+.chat-msg {
+    padding: 12px 18px;
+    border-radius: 18px;
+    max-width: 80%;
+    word-wrap: break-word;
+    line-height: 1.5;
+    font-size: 15px;
+}
+.chat-msg.user {
+    background: linear-gradient(135deg, #1b4332, #2d6a4f);
+    color: white;
+    align-self: flex-end;
+    border-radius: 18px 18px 0 18px;
+    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2);
+}
+.chat-msg.ai {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1b4332;
+    align-self: flex-start;
+    border-radius: 18px 18px 18px 0;
+    border: 1px solid rgba(116, 198, 157, 0.3);
+}
+.chat-msg.loading {
+    background: rgba(232, 245, 233, 0.8);
+    color: #74a892;
+    font-style: italic;
+    align-self: flex-start;
+}
+.chat-input-row {
+    display: flex;
+    gap: 10px;
+}
+.chat-input-row input {
+    flex: 1;
+    margin: 0;
+}
+.chat-input-row button {
+    min-width: 120px;
+}
+
+@media (max-width: 768px) {
+    .chat-history { height: 350px; padding: 15px; }
+    .chat-msg { max-width: 90%; font-size: 14px; }
+    .chat-input-row { flex-direction: column; }
+    .chat-input-row button { width: 100%; }
+}
+
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -401,6 +460,7 @@
             <button onclick="showSection('materials')" id="btn-materials">Материалы</button>
             <button onclick="showSection('admin')" id="btn-admin" class="hidden">Админ</button>
             <button onclick="logout()" class="btn-logout">Выйти</button>
+            <button onclick="showSection('chat')" id="btn-chat">💬 Чат с AI</button>
         </div>
 
         <div id="section-game" class="card">
@@ -417,6 +477,21 @@
             <h2>Конспекты и материалы</h2>
             <div id="materialsList"></div>
         </div>
+
+        <div id="section-chat" class="card hidden">
+    <h2>💬 Помощник по итальянскому</h2>
+    <p style="color: #2d6a4f; margin-bottom: 15px;">Задайте любой вопрос — я всегда говорю про итальянский!</p>
+    <div id="chatHistory" class="chat-history">
+        <div class="chat-msg ai">
+            Ciao! 👋 Я ваш виртуальный помощник. Спросите меня что угодно про итальянский язык — 
+            перевод слов, грамматику, произношение или просто попрактикуемся!
+        </div>
+    </div>
+    <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Напишите вопрос..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()" id="sendBtn">Отправить</button>
+    </div>
+</div>
 
         <div id="section-admin" class="card hidden">
             <h2>Добавление контента</h2>
@@ -452,7 +527,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzGGfojhQgNSv-Z0Vg2gArFWGyh3h5cSw61kvkiC4wMliSqkb9aN4O8m5uhhKPDd86Z/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzPKNRdve2sAiGDWsL7LplEQXZ68DCrCVpGNoeLqlGFaM608yxVHnBeH9N8a6MnoIL0Ew/exec";
     let currentUserRole = 'user';
 
     // 1. ПРОВЕРКА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ (чтобы не выбрасывало при обновлении)
@@ -544,7 +619,7 @@
             return;
         }
         
-        ['game', 'lessons', 'materials', 'admin'].forEach(s => {
+           ['game', 'lessons', 'materials', 'chat', 'admin'].forEach(s => {
             document.getElementById('section-' + s).classList.add('hidden');
             const btn = document.getElementById('btn-' + s);
             if (btn) btn.classList.remove('active');
@@ -879,7 +954,59 @@ function openMaterial(title, content, type) {
             console.error(e);
             return { success: false, message: 'Ошибка сети', data: [] };
         }
+    
     }
+
+    async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const history = document.getElementById('chatHistory');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Сообщение пользователя
+    history.innerHTML += `<div class="chat-msg user">${escapeHtml(message)}</div>`;
+    input.value = '';
+    
+    // Индикатор загрузки
+    const loadingId = 'loading-' + Date.now();
+    history.innerHTML += `<div id="${loadingId}" class="chat-msg loading">🤔 Нейросеть думает...</div>`;
+    history.scrollTop = history.scrollHeight;
+    sendBtn.disabled = true;
+
+    try {
+        const res = await fetchAPI({ action: 'chat', message: message });
+        
+        document.getElementById(loadingId).remove();
+        
+        if (res.success) {
+            // Форматируем ответ: **жирный** -> <b>жирный</b>, переносы строк -> <br>
+            let formattedReply = escapeHtml(res.message);
+            formattedReply = formattedReply.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+            formattedReply = formattedReply.replace(/\n/g, '<br>');
+            
+            history.innerHTML += `<div class="chat-msg ai">${formattedReply}</div>`;
+        } else {
+            history.innerHTML += `<div class="chat-msg ai" style="background: #f8d7da; color: #721c24;">❌ ${res.message}</div>`;
+        }
+    } catch (e) {
+        document.getElementById(loadingId).remove();
+        history.innerHTML += `<div class="chat-msg ai" style="background: #f8d7da; color: #721c24;">❌ Ошибка сети</div>`;
+    }
+    
+    history.scrollTop = history.scrollHeight;
+    sendBtn.disabled = false;
+    input.focus();
+}
+
+// Защита от XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+    
 </script>
 </body>
 </html>
