@@ -6,9 +6,10 @@
     <title>Учебная Платформа</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
+              body { 
             font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(135deg, #d4edda 0%, #a8d5ba 50%, #c8e6c9 100%);
+            /* Очень лёгкий, воздушный градиент: от почти белого к нежно-мятному */
+            background: linear-gradient(135deg, #f8fdf9 0%, #e8f5e9 50%, #f0f7f4 100%);
             color: #1b4332; 
             margin: 0; 
             padding: 20px; 
@@ -94,6 +95,23 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.5),
                 inset 0 -2px 5px rgba(139, 0, 0, 0.3) !important;
         }
+
+                /* Красная кнопка "Выйти" */
+        .btn-logout {
+            background: linear-gradient(135deg, #ce2b37 0%, #e63946 50%, #ff4d5a 100%) !important;
+            box-shadow: 
+                0 4px 15px rgba(206, 43, 55, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -2px 5px rgba(139, 0, 0, 0.2) !important;
+        }
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #a02029 0%, #ce2b37 50%, #e63946 100%) !important;
+            box-shadow: 
+                0 8px 25px rgba(206, 43, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -2px 5px rgba(139, 0, 0, 0.3) !important;
+        }
+        
         .btn-login:hover {
             background: linear-gradient(135deg, #a02029 0%, #ce2b37 50%, #e63946 100%) !important;
             box-shadow: 
@@ -381,7 +399,7 @@
             <button onclick="showSection('lessons')" id="btn-lessons">Уроки</button>
             <button onclick="showSection('materials')" id="btn-materials">Материалы</button>
             <button onclick="showSection('admin')" id="btn-admin" class="hidden">Админ</button>
-            <button onclick="logout()" style="background: linear-gradient(135deg, #95d5b2, #b7e4c7);">Выйти</button>
+            <button onclick="logout()" class="btn-logout">Выйти</button>
         </div>
 
         <div id="section-game" class="card">
