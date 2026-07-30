@@ -19,7 +19,6 @@
         
         h1, h2, h3 { color: #1b4332; }
         
-        /* Карточки */
         .card { 
             background: rgba(255, 255, 255, 0.75); 
             backdrop-filter: blur(10px);
@@ -30,7 +29,6 @@
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
         
-        /* Поля ввода */
         input, textarea, select { 
             width: 100%; 
             padding: 12px; 
@@ -49,7 +47,6 @@
         }
         input::placeholder, textarea::placeholder { color: #74a892; }
 
-        /* 🪞 ЗЕРКАЛЬНЫЕ КНОПКИ */
         button { 
             position: relative;
             background: linear-gradient(135deg, #52b788 0%, #74c69d 50%, #95d5b2 100%);
@@ -68,7 +65,6 @@
                 inset 0 -2px 5px rgba(27, 67, 50, 0.2);
             text-shadow: 0 1px 2px rgba(27, 67, 50, 0.3);
         }
-        /* Зеркальный блик */
         button::before {
             content: '';
             position: absolute;
@@ -76,17 +72,10 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.5),
-                transparent
-            );
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
             transition: left 0.6s ease;
         }
-        button:hover::before {
-            left: 100%;
-        }
+        button:hover::before { left: 100%; }
         button:hover {
             transform: translateY(-2px);
             box-shadow: 
@@ -95,66 +84,27 @@
                 inset 0 -2px 5px rgba(27, 67, 50, 0.2);
             background: linear-gradient(135deg, #40916c 0%, #52b788 50%, #74c69d 100%);
         }
-        button:active {
-            transform: translateY(0);
-        }
+        button:active { transform: translateY(0); }
 
-        /* Меню */
         .nav { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .nav button { 
-            flex: 1; 
-            min-width: 140px;
-            background: linear-gradient(135deg, #74c69d 0%, #95d5b2 100%);
-        }
+        .nav button { flex: 1; min-width: 140px; background: linear-gradient(135deg, #74c69d 0%, #95d5b2 100%); }
         .nav button.active { 
             background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-            box-shadow: 
-                0 4px 15px rgba(27, 67, 50, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(27, 67, 50, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
-        /* 🇮🇹 ФЛАГ ИТАЛИИ на экране входа */
-        .login-screen {
-            max-width: 420px; 
-            margin: 50px auto;
-            position: relative;
-            overflow: hidden;
-        }
-        .italy-flag {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            display: flex;
-            border-radius: 20px 20px 0 0;
-        }
+        .login-screen { max-width: 420px; margin: 50px auto; position: relative; overflow: hidden; }
+        .italy-flag { position: absolute; top: 0; left: 0; right: 0; height: 6px; display: flex; border-radius: 20px 20px 0 0; }
         .italy-flag div { flex: 1; }
         .italy-flag .green { background: #009246; }
         .italy-flag .white { background: #ffffff; }
         .italy-flag .red { background: #ce2b37; }
         
-        .login-header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-top: 15px;
-        }
-        .login-header h2 {
-            margin: 0;
-            font-size: 28px;
-        }
-        .login-header .subtitle {
-            color: #2d6a4f;
-            font-size: 14px;
-            margin-top: 5px;
-        }
+        .login-header { text-align: center; margin-bottom: 25px; padding-top: 15px; }
+        .login-header h2 { margin: 0; font-size: 28px; }
+        .login-header .subtitle { color: #2d6a4f; font-size: 14px; margin-top: 5px; }
 
-        /* Карта игры */
-        .game-map { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-            gap: 15px; 
-        }
+        .game-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
         .level-card { 
             background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(168, 213, 186, 0.6));
             padding: 20px; 
@@ -170,16 +120,11 @@
             border-color: #2d6a4f;
             box-shadow: 0 8px 20px rgba(45, 106, 79, 0.25);
         }
-        .level-card.locked { 
-            background: rgba(200, 200, 200, 0.4); 
-            color: #999; 
-            cursor: not-allowed; 
-        }
+        .level-card.locked { background: rgba(200, 200, 200, 0.4); color: #999; cursor: not-allowed; }
         .level-card.locked:hover { transform: none; border-color: rgba(116, 198, 157, 0.3); }
         .level-num { font-size: 26px; font-weight: bold; color: #1b4332; }
         .level-block { font-size: 12px; color: #2d6a4f; margin-top: 5px; }
 
-        /* Списки */
         .list-item { 
             background: rgba(255, 255, 255, 0.7);
             padding: 15px 20px; 
@@ -191,8 +136,7 @@
             border-left: 4px solid #52b788;
         }
 
-        /* Сообщение об ошибке/успехе */
-        .msg { text-align: center; margin-top: 15px; font-weight: 500; }
+        .msg { text-align: center; margin-top: 15px; font-weight: 500; white-space: pre-line; }
         .msg.success { color: #1b4332; }
         .msg.error { color: #ce2b37; }
         .msg.info { color: #2d6a4f; }
@@ -203,7 +147,6 @@
 <body>
 
 <div class="container">
-    <!-- ЭКРАН ЛОГИНА С ФЛАГОМ ИТАЛИИ -->
     <div id="loginScreen" class="card login-screen">
         <div class="italy-flag">
             <div class="green"></div>
@@ -220,7 +163,6 @@
         <p id="loginError" class="msg"></p>
     </div>
 
-    <!-- ЛИЧНЫЙ КАБИНЕТ -->
     <div id="cabinet" class="hidden">
         <div class="nav">
             <button onclick="showSection('game')" id="btn-game" class="active">🎮 Игра</button>
@@ -230,33 +172,29 @@
             <button onclick="logout()" style="background: linear-gradient(135deg, #95d5b2, #b7e4c7);">🚪 Выйти</button>
         </div>
 
-        <!-- РАЗДЕЛ ИГРА -->
         <div id="section-game" class="card">
             <h2>🎮 Карта уровней</h2>
             <div class="game-map" id="gameMapContainer"></div>
         </div>
 
-        <!-- РАЗДЕЛ УРОКИ -->
         <div id="section-lessons" class="card hidden">
             <h2>📚 Уроки</h2>
             <div id="lessonsList"></div>
         </div>
 
-        <!-- РАЗДЕЛ МАТЕРИАЛЫ -->
         <div id="section-materials" class="card hidden">
             <h2>📝 Конспекты и материалы</h2>
             <div id="materialsList"></div>
         </div>
 
-        <!-- АДМИН-ПАНЕЛЬ (только для role = admin) -->
         <div id="section-admin" class="card hidden">
             <h2>⚙️ Добавление контента</h2>
             
             <h3>Добавить слово/задание в Игру</h3>
             <input type="number" id="addLevel" placeholder="Номер уровня (1-100)">
-            <input type="text" id="addBlock" placeholder="Название блока (напр. 'Еда')">
-            <input type="text" id="addWord" placeholder="Слово / Вопрос">
-            <input type="text" id="addTask" placeholder="Задание / Перевод">
+            <input type="text" id="addBlock" placeholder="Название блока (напр. 'Famiglia')">
+            <input type="text" id="addWord" placeholder="Слово на итальянском">
+            <input type="text" id="addTask" placeholder="Перевод на русский">
             <button onclick="addContent('addGameContent', ['addLevel', 'addBlock', 'addWord', 'addTask'])">Добавить в игру</button>
             
             <hr>
@@ -280,57 +218,53 @@
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzGGfojhQgNSv-Z0Vg2gArFWGyh3h5cSw61kvkiC4wMliSqkb9aN4O8m5uhhKPDd86Z/exec";
-    let currentUserRole = 'user'; // по умолчанию обычный пользователь
+    let currentUserRole = 'user';
 
-    // --- ЛОГИКА АВТОРИЗАЦИИ ---
-async function doLogin() {
-    alert('Функция вызвана!'); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
-    
-    const login = document.getElementById('loginInput').value;
-    const pass = document.getElementById('passInput').value;
-    const errorBox = document.getElementById('loginError');
-    
-    errorBox.innerText = '⏳ Проверяю...';
-    errorBox.style.color = '#2d6a4f';
-    errorBox.style.whiteSpace = 'pre-line';
-    
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'login', login, password: pass })
-        });
-        const text = await response.text();
+    async function doLogin() {
+        const login = document.getElementById('loginInput').value;
+        const pass = document.getElementById('passInput').value;
+        const errorBox = document.getElementById('loginError');
         
-        let res;
+        errorBox.innerText = '⏳ Проверяю...';
+        errorBox.className = 'msg info';
+        
         try {
-            res = JSON.parse(text);
-        } catch(e) {
-            errorBox.style.color = '#ce2b37';
-            errorBox.innerText = '❌ Сервер вернул не JSON!\n\nПроверьте:\n1. URL заканчивается на /exec?\n2. В настройках развертывания доступ = "Все"?\n\nОтвет сервера:\n' + text.substring(0, 300);
-            return;
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', login, password: pass })
+            });
+            const text = await response.text();
+            
+            let res;
+            try {
+                res = JSON.parse(text);
+            } catch(e) {
+                errorBox.className = 'msg error';
+                errorBox.innerText = '❌ Сервер вернул не JSON!\n\nПроверьте:\n1. URL заканчивается на /exec?\n2. В настройках развертывания доступ = "Все"?\n\nОтвет сервера:\n' + text.substring(0, 300);
+                return;
+            }
+            
+            errorBox.innerText = res.message || 'Нет сообщения';
+            errorBox.className = res.success ? 'msg success' : 'msg error';
+            
+            if (res.success) {
+                currentUserRole = res.role || 'user';
+                setTimeout(() => {
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('cabinet').classList.remove('hidden');
+                    if (currentUserRole === 'admin') {
+                        document.getElementById('btn-admin').classList.remove('hidden');
+                    } else {
+                        document.getElementById('btn-admin').classList.add('hidden');
+                    }
+                    showSection('game');
+                }, 1000);
+            }
+        } catch (e) {
+            errorBox.className = 'msg error';
+            errorBox.innerText = '❌ Ошибка сети: ' + e.message + '\n\nПроверьте URL в HTML-файле';
         }
-        
-        errorBox.innerText = res.message || (res.debug ? res.debug : 'Нет сообщения');
-        errorBox.style.color = res.success ? '#1b4332' : '#ce2b37';
-        
-        if (res.success) {
-            currentUserRole = res.role || 'user';
-            setTimeout(() => {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('cabinet').classList.remove('hidden');
-                if (currentUserRole === 'admin') {
-                    document.getElementById('btn-admin').classList.remove('hidden');
-                } else {
-                    document.getElementById('btn-admin').classList.add('hidden');
-                }
-                showSection('game');
-            }, 1500);
-        }
-    } catch (e) {
-        errorBox.style.color = '#ce2b37';
-        errorBox.innerText = '❌ Ошибка сети: ' + e.message + '\n\nПроверьте URL в HTML-файле';
     }
-}
 
     function logout() {
         document.getElementById('loginScreen').classList.remove('hidden');
@@ -341,9 +275,7 @@ async function doLogin() {
         currentUserRole = 'user';
     }
 
-    // --- НАВИГАЦИЯ ---
     function showSection(name) {
-        // Защита: если пытаются открыть админку без прав
         if (name === 'admin' && currentUserRole !== 'admin') {
             alert('⛔ У вас нет доступа к админ-панели');
             return;
@@ -363,137 +295,109 @@ async function doLogin() {
         if (name === 'materials') loadList('Materials', 'materialsList', 'material');
     }
 
-    // --- ЗАГРУЗКА ДАННЫХ ---
-    // --- ЗАГРУЗКА КАРТЫ УРОВНЕЙ ---
-async function loadGameMap() {
-    const res = await fetchAPI({ action: 'getData', table: 'Game' });
-    const container = document.getElementById('gameMapContainer');
-    container.innerHTML = '';
-    
-    for (let i = 1; i <= 100; i++) {
-        const levelTasks = res.data.filter(d => parseInt(d.level) === i);
-        const hasTasks = levelTasks.length > 0;
+    async function loadGameMap() {
+        const res = await fetchAPI({ action: 'getData', table: 'Game' });
+        const container = document.getElementById('gameMapContainer');
+        container.innerHTML = '';
         
-        const card = document.createElement('div');
-        card.className = `level-card ${hasTasks ? '' : 'locked'}`;
-        card.innerHTML = `
-            <div class="level-num">${i}</div>
-            <div class="level-block">${hasTasks ? levelTasks[0].block : '🔒 Закрыто'}</div>
-        `;
-        if(hasTasks) {
-            card.onclick = () => openLevel(i, levelTasks);
-        }
-        container.appendChild(card);
-    }
-}
-
-// --- ОТКРЫТИЕ УРОВНЯ С ЗАДАНИЯМИ ---
-function openLevel(levelNum, tasks) {
-    // Создаём модальное окно
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(27, 67, 50, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    `;
-    
-    const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
-        background: linear-gradient(135deg, #d4edda, #a8d5ba);
-        padding: 30px;
-        border-radius: 20px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    `;
-    
-    let currentTaskIndex = 0;
-    let score = 0;
-    
-    function renderTask() {
-        if (currentTaskIndex >= tasks.length) {
-            // Все задания выполнены
-            modalContent.innerHTML = `
-                <h2 style="color: #1b4332; text-align: center;">🎉 Уровень пройден!</h2>
-                <p style="text-align: center; font-size: 18px; color: #2d6a4f;">
-                    Правильных ответов: ${score} из ${tasks.length}
-                </p>
-                <button onclick="this.closest('div[style]').remove()" style="width: 100%; margin-top: 20px;">Закрыть</button>
+        for (let i = 1; i <= 100; i++) {
+            const levelTasks = res.data.filter(d => parseInt(d.level) === i);
+            const hasTasks = levelTasks.length > 0;
+            
+            const card = document.createElement('div');
+            card.className = `level-card ${hasTasks ? '' : 'locked'}`;
+            card.innerHTML = `
+                <div class="level-num">${i}</div>
+                <div class="level-block">${hasTasks ? levelTasks[0].block : '🔒 Закрыто'}</div>
             `;
-            return;
+            if(hasTasks) {
+                card.onclick = () => openLevel(i, levelTasks);
+            }
+            container.appendChild(card);
         }
-        
-        const task = tasks[currentTaskIndex];
-        
-        modalContent.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: #1b4332; margin: 0;">Уровень ${levelNum}</h2>
-                <span style="color: #2d6a4f; font-size: 14px;">Задание ${currentTaskIndex + 1} из ${tasks.length}</span>
-            </div>
-            
-            <div style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
-                <p style="font-size: 16px; color: #2d6a4f; margin: 0 0 10px 0;">Напишите по-английски:</p>
-                <p style="font-size: 32px; color: #1b4332; font-weight: bold; margin: 0;">${task.task}</p>
-            </div>
-            
-            <input type="text" id="userAnswer" placeholder="Введите слово на английском..." 
-                   style="width: 100%; padding: 15px; font-size: 18px; text-align: center;">
-            
-            <div id="feedback" style="text-align: center; margin: 15px 0; min-height: 30px;"></div>
-            
-            <button onclick="checkAnswer()" style="width: 100%;">Проверить</button>
+    }
+
+    function openLevel(levelNum, tasks) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(27, 67, 50, 0.8); display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
         `;
         
-        // Фокус на поле ввода
-        setTimeout(() => document.getElementById('userAnswer').focus(), 100);
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: linear-gradient(135deg, #d4edda, #a8d5ba); padding: 30px;
+            border-radius: 20px; max-width: 500px; width: 90%; max-height: 80vh;
+            overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        `;
         
-        // Проверка по Enter
-        document.getElementById('userAnswer').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkAnswer();
-        });
-    }
-    
-    // Функция проверки ответа (глобальная для модального окна)
-    window.checkAnswer = function() {
-        const userAnswer = document.getElementById('userAnswer').value.trim().toLowerCase();
-        const correctAnswer = tasks[currentTaskIndex].word.toLowerCase();
-        const feedback = document.getElementById('feedback');
+        let currentTaskIndex = 0;
+        let score = 0;
         
-        if (userAnswer === correctAnswer) {
-            score++;
-            feedback.innerHTML = '<span style="color: #1b4332; font-weight: bold;">✅ Правильно!</span>';
-            setTimeout(() => {
-                currentTaskIndex++;
-                renderTask();
-            }, 1000);
-        } else {
-            feedback.innerHTML = `<span style="color: #ce2b37; font-weight: bold;">❌ Неправильно. Правильный ответ: <b>${tasks[currentTaskIndex].word}</b></span>`;
-            setTimeout(() => {
-                currentTaskIndex++;
-                renderTask();
-            }, 2000);
+        function renderTask() {
+            if (currentTaskIndex >= tasks.length) {
+                modalContent.innerHTML = `
+                    <h2 style="color: #1b4332; text-align: center;">🎉 Уровень пройден!</h2>
+                    <p style="text-align: center; font-size: 18px; color: #2d6a4f;">
+                        Правильных ответов: ${score} из ${tasks.length}
+                    </p>
+                    <button onclick="this.closest('div[style]').remove()" style="width: 100%; margin-top: 20px;">Закрыть</button>
+                `;
+                return;
+            }
+            
+            const task = tasks[currentTaskIndex];
+            
+            modalContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #1b4332; margin: 0;">Уровень ${levelNum}</h2>
+                    <span style="color: #2d6a4f; font-size: 14px;">Задание ${currentTaskIndex + 1} из ${tasks.length}</span>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                    <p style="font-size: 16px; color: #2d6a4f; margin: 0 0 10px 0;">Напишите по-итальянски:</p>
+                    <p style="font-size: 32px; color: #1b4332; font-weight: bold; margin: 0;">${task.task}</p>
+                </div>
+                
+                <input type="text" id="userAnswer" placeholder="Введите слово на итальянском..." 
+                       style="width: 100%; padding: 15px; font-size: 18px; text-align: center;">
+                
+                <div id="feedback" style="text-align: center; margin: 15px 0; min-height: 30px;"></div>
+                
+                <button onclick="checkAnswer()" style="width: 100%;">Проверить</button>
+            `;
+            
+            setTimeout(() => document.getElementById('userAnswer').focus(), 100);
+            
+            document.getElementById('userAnswer').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkAnswer();
+            });
         }
-    };
-    
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-    
-    // Закрытие по клику на фон
-    modal.onclick = (e) => {
-        if (e.target === modal) modal.remove();
-    };
-    
-    renderTask();
-}
+        
+        window.checkAnswer = function() {
+            const userAnswer = document.getElementById('userAnswer').value.trim().toLowerCase();
+            const correctAnswer = tasks[currentTaskIndex].word.toLowerCase();
+            const feedback = document.getElementById('feedback');
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                feedback.innerHTML = '<span style="color: #1b4332; font-weight: bold;">✅ Правильно!</span>';
+                setTimeout(() => { currentTaskIndex++; renderTask(); }, 1000);
+            } else {
+                feedback.innerHTML = `<span style="color: #ce2b37; font-weight: bold;">❌ Неправильно. Правильный ответ: <b>${tasks[currentTaskIndex].word}</b></span>`;
+                setTimeout(() => { currentTaskIndex++; renderTask(); }, 2000);
+            }
+        };
+        
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
+        
+        renderTask();
     }
 
     async function loadList(tableName, containerId, type) {
@@ -518,7 +422,6 @@ function openLevel(levelNum, tasks) {
         });
     }
 
-    // --- ДОБАВЛЕНИЕ КОНТЕНТА ---
     async function addContent(action, fields) {
         let payload = { action };
         if(action === 'addGameContent') payload = { action, level: document.getElementById('addLevel').value, block: document.getElementById('addBlock').value, word: document.getElementById('addWord').value, task: document.getElementById('addTask').value };
