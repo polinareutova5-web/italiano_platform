@@ -6,14 +6,15 @@
     <title>Учебная Платформа</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { 
+                      body { 
             font-family: 'Segoe UI', sans-serif; 
-            /* Очень лёгкий, воздушный градиент: от почти белого к нежно-мятному */
-            background: linear-gradient(135deg, #f8fdf9 0%, #e8f5e9 50%, #f0f7f4 100%);
+            /* Мягкий градиент в цветах итальянского флага: зелёный → белый → красный */
+            background: linear-gradient(135deg, #d4edda 0%, #ffffff 50%, #f8d7da 100%);
             color: #1b4332; 
             margin: 0; 
             padding: 20px; 
             min-height: 100vh;
+            background-attachment: fixed; /* Чтобы градиент красиво стоял на месте при прокрутке */
         }
         .container { max-width: 1000px; margin: 0 auto; }
         .hidden { display: none !important; }
