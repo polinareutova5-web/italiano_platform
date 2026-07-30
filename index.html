@@ -283,7 +283,9 @@
     let currentUserRole = 'user'; // по умолчанию обычный пользователь
 
     // --- ЛОГИКА АВТОРИЗАЦИИ ---
- async function doLogin() {
+async function doLogin() {
+    alert('Функция вызвана!'); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
+    
     const login = document.getElementById('loginInput').value;
     const pass = document.getElementById('passInput').value;
     const errorBox = document.getElementById('loginError');
