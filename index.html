@@ -283,50 +283,52 @@
     let currentUserRole = 'user'; // по умолчанию обычный пользователь
 
     // --- ЛОГИКА АВТОРИЗАЦИИ ---
-    async function doLogin() {
-        const login = document.getElementById('loginInput').value;
-        const pass = document.getElementById('passInput').value;
-        const errorBox = document.getElementById('loginError');
+ async function doLogin() {
+    const login = document.getElementById('loginInput').value;
+    const pass = document.getElementById('passInput').value;
+    const errorBox = document.getElementById('loginError');
+    
+    errorBox.innerText = '⏳ Проверяю...';
+    errorBox.style.color = '#2d6a4f';
+    errorBox.style.whiteSpace = 'pre-line';
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'login', login, password: pass })
+        });
+        const text = await response.text();
         
-        errorBox.innerText = '⏳ Проверяю...';
-        errorBox.className = 'msg info';
-        
+        let res;
         try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'login', login, password: pass })
-            });
-            const res = await response.json();
-            
-            if (res.success) {
-                errorBox.innerText = '✅ ' + res.message;
-                errorBox.className = 'msg success';
-                
-                // Сохраняем роль пользователя
-                currentUserRole = res.role || 'user';
-                
-                setTimeout(() => {
-                    document.getElementById('loginScreen').classList.add('hidden');
-                    document.getElementById('cabinet').classList.remove('hidden');
-                    
-                    // Показываем кнопку "Админ" только если роль = admin
-                    if (currentUserRole === 'admin') {
-                        document.getElementById('btn-admin').classList.remove('hidden');
-                    } else {
-                        document.getElementById('btn-admin').classList.add('hidden');
-                    }
-                    
-                    showSection('game');
-                }, 600);
-            } else {
-                errorBox.innerText = '❌ ' + res.message;
-                errorBox.className = 'msg error';
-            }
-        } catch (e) {
-            errorBox.innerText = '❌ Ошибка сети: ' + e.message;
-            errorBox.className = 'msg error';
+            res = JSON.parse(text);
+        } catch(e) {
+            errorBox.style.color = '#ce2b37';
+            errorBox.innerText = '❌ Сервер вернул не JSON!\n\nПроверьте:\n1. URL заканчивается на /exec?\n2. В настройках развертывания доступ = "Все"?\n\nОтвет сервера:\n' + text.substring(0, 300);
+            return;
         }
+        
+        errorBox.innerText = res.message || (res.debug ? res.debug : 'Нет сообщения');
+        errorBox.style.color = res.success ? '#1b4332' : '#ce2b37';
+        
+        if (res.success) {
+            currentUserRole = res.role || 'user';
+            setTimeout(() => {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('cabinet').classList.remove('hidden');
+                if (currentUserRole === 'admin') {
+                    document.getElementById('btn-admin').classList.remove('hidden');
+                } else {
+                    document.getElementById('btn-admin').classList.add('hidden');
+                }
+                showSection('game');
+            }, 1500);
+        }
+    } catch (e) {
+        errorBox.style.color = '#ce2b37';
+        errorBox.innerText = '❌ Ошибка сети: ' + e.message + '\n\nПроверьте URL в HTML-файле';
     }
+}
 
     function logout() {
         document.getElementById('loginScreen').classList.remove('hidden');
