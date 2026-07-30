@@ -712,51 +712,137 @@
         renderTask();
     }
 
-    async function loadList(tableName, containerId, type) {
-        console.log(`🔄 Загружаем данные из таблицы: ${tableName}`);
-        const res = await fetchAPI({ action: 'getData', table: tableName });
-        console.log('📦 Ответ от сервера:', res);
-        
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
+   async function loadList(tableName, containerId, type) {
+    console.log(`🔄 Загружаем данные из таблицы: ${tableName}`);
+    const res = await fetchAPI({ action: 'getData', table: tableName });
+    
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
 
-        if (!res.success) {
-            container.innerHTML = `<p style="color: #ce2b37; text-align: center;">❌ Ошибка: ${res.message}<br>Проверьте название вкладки в таблице (должно быть Lessons или Materials).</p>`;
-            return;
-        }
-
-        if (!res.data || res.data.length === 0) {
-            container.innerHTML = '<p style="color: #74a892; text-align: center;">📭 Пока ничего не добавлено</p>';
-            return;
-        }
-
-        res.data.forEach(item => {
-            console.log('📝 Элемент:', item);
-            const div = document.createElement('div');
-            div.className = 'list-item';
-
-            if (type === 'lesson') {
-                const title = item.title || 'Без названия (проверьте заголовок title в таблице)';
-                const link = item.link || '#';
-                div.innerHTML = `
-                    <span><b>${title}</b></span>
-                    <a href="${link}" target="_blank" style="text-decoration: none;">
-                        <button>Открыть</button>
-                    </a>
-                `;
-            } else {
-                const title = item.title || 'Без названия';
-                const content = item.content || 'Нет текста (проверьте заголовок content в таблице)';
-                div.innerHTML = `
-                    <div>
-                        <b>${title}</b><br>
-                        <small style="color: #2d6a4f; white-space: pre-wrap; margin-top: 5px; display: block;">${content}</small>
-                    </div>
-                `;
-            }
-            container.appendChild(div);
-        });
+    if (!res.success) {
+        container.innerHTML = `<p style="color: #ce2b37; text-align: center;">❌ Ошибка: ${res.message}</p>`;
+        return;
     }
+
+    if (!res.data || res.data.length === 0) {
+        container.innerHTML = '<p style="color: #74a892; text-align: center;">📭 Пока ничего не добавлено</p>';
+        return;
+    }
+
+    res.data.forEach(item => {
+        // Умная очистка ключей
+        const cleanItem = {};
+        for (const key in item) {
+            const cleanKey = String(key).trim().toLowerCase();
+            cleanItem[cleanKey] = item[key];
+        }
+        
+        const div = document.createElement('div');
+        div.className = 'list-item';
+
+        if (type === 'lesson') {
+            const title = cleanItem.title || 'Без названия';
+            const link = cleanItem.link || '#';
+            div.innerHTML = `
+                <span><b>${title}</b></span>
+                <a href="${link}" target="_blank" style="text-decoration: none;">
+                    <button>Открыть</button>
+                </a>
+            `;
+        } else {
+            // МАТЕРИАЛЫ — с кнопкой предпросмотра
+            const title = cleanItem.title || 'Без названия';
+            const content = cleanItem.content || '';
+            
+            // Определяем тип контента
+            let materialType = 'text';
+            if (content.startsWith('http://') || content.startsWith('https://')) {
+                if (content.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+                    materialType = 'image';
+                } else {
+                    materialType = 'link';
+                }
+            }
+            
+            div.innerHTML = `
+                <div style="flex: 1;">
+                    <b>${title}</b>
+                    <small style="color: #74a892; display: block; margin-top: 5px;">
+                        ${materialType === 'image' ? '🖼️ Изображение' : 
+                          materialType === 'link' ? '🔗 Внешняя ссылка' : '📝 Текст'}
+                    </small>
+                </div>
+                <button onclick="openMaterial('${title.replace(/'/g, "\\'")}', '${content.replace(/'/g, "\\'")}', '${materialType}')">
+                    ${materialType === 'link' ? 'Открыть' : 'Просмотр'}
+                </button>
+            `;
+            container.appendChild(div);
+        }
+    });
+}
+    // Открытие материала в модальном окне
+function openMaterial(title, content, type) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(27, 67, 50, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+    `;
+    
+    let modalContent = '';
+    
+    if (type === 'image') {
+        // Показ картинки
+        modalContent = `
+            <div style="background: white; padding: 30px; border-radius: 20px; max-width: 90%; max-height: 90%; display: flex; flex-direction: column; align-items: center;">
+                <h2 style="color: #1b4332; margin-bottom: 20px; text-align: center;">${title}</h2>
+                <img src="${content}" alt="${title}" style="max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+                <button onclick="this.closest('.modal-material').remove()" style="margin-top: 20px; background: linear-gradient(135deg, #ce2b37, #e63946);">Закрыть</button>
+            </div>
+        `;
+    } else if (type === 'link') {
+        // Внешняя ссылка (Google Docs и т.д.)
+        modalContent = `
+            <div style="background: white; padding: 40px; border-radius: 20px; max-width: 500px; text-align: center;">
+                <h2 style="color: #1b4332; margin-bottom: 15px;">${title}</h2>
+                <p style="color: #2d6a4f; margin-bottom: 30px; word-break: break-all; font-size: 14px;">${content}</p>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <a href="${content}" target="_blank" style="text-decoration: none;">
+                        <button style="background: linear-gradient(135deg, #52b788, #74c69d);">🔗 Открыть ссылку</button>
+                    </a>
+                    <button onclick="this.closest('.modal-material').remove()" style="background: linear-gradient(135deg, #95d5b2, #b7e4c7); color: #1b4332;">Закрыть</button>
+                </div>
+            </div>
+        `;
+    } else {
+        // Текст
+        modalContent = `
+            <div style="background: white; padding: 40px; border-radius: 20px; max-width: 700px; max-height: 80vh; overflow-y: auto;">
+                <h2 style="color: #1b4332; margin-bottom: 20px;">${title}</h2>
+                <div style="color: #2d6a4f; line-height: 1.8; white-space: pre-wrap; font-size: 16px;">${content}</div>
+                <button onclick="this.closest('.modal-material').remove()" style="margin-top: 25px; width: 100%; background: linear-gradient(135deg, #52b788, #74c69d);">Закрыть</button>
+            </div>
+        `;
+    }
+    
+    modal.className = 'modal-material';
+    modal.innerHTML = modalContent;
+    
+    // Закрытие по клику на фон
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    document.body.appendChild(modal);
+}
 
     async function addGameContent() {
         const payload = {
