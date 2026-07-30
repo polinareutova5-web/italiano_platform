@@ -109,24 +109,48 @@
 
     // --- ЛОГИКА АВТОРИЗАЦИИ ---
     async function doLogin() {
-        const login = document.getElementById('loginInput').value;
-        const pass = document.getElementById('passInput').value;
+    const login = document.getElementById('loginInput').value;
+    const pass = document.getElementById('passInput').value;
+    const errorBox = document.getElementById('loginError');
+    
+    errorBox.innerText = '⏳ Проверяю...';
+    errorBox.style.color = '#4bcffa';
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'login', login, password: pass })
+        });
+        const text = await response.text();
+        console.log('Сырой ответ от сервера:', text); // для консоли
         
-        const res = await fetchAPI({ action: 'login', login, password: pass });
+        let res;
+        try {
+            res = JSON.parse(text);
+        } catch(e) {
+            errorBox.style.color = 'red';
+            errorBox.innerText = '❌ Сервер вернул не JSON. Проверьте URL (должен заканчиваться на /exec) и доступ "Все".\n\nОтвет: ' + text.substring(0, 200);
+            return;
+        }
         
         if (res.success) {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('cabinet').classList.remove('hidden');
-            showSection('game');
+            errorBox.style.color = 'green';
+            errorBox.innerText = res.message;
+            setTimeout(() => {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('cabinet').classList.remove('hidden');
+                showSection('game');
+            }, 800);
         } else {
-            document.getElementById('loginError').innerText = res.message;
+            errorBox.style.color = 'red';
+            errorBox.innerText = res.message;
         }
+    } catch (e) {
+        errorBox.style.color = 'red';
+        errorBox.innerText = '❌ Ошибка сети: ' + e.message + '\n\nПроверьте:\n1. Правильность URL\n2. Доступ "Все" в настройках развертывания';
     }
+}
 
-    function logout() {
-        document.getElementById('loginScreen').classList.remove('hidden');
-        document.getElementById('cabinet').classList.add('hidden');
-    }
 
     // --- НАВИГАЦИЯ ---
     function showSection(name) {
