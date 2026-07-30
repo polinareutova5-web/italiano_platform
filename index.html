@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Учебная Платформа</title>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: 'Segoe UI', sans-serif; 
             background: linear-gradient(135deg, #d4edda 0%, #a8d5ba 50%, #c8e6c9 100%);
@@ -86,8 +86,25 @@
         }
         button:active { transform: translateY(0); }
 
+        /* Красная кнопка "Войти" */
+        .btn-login {
+            background: linear-gradient(135deg, #ce2b37 0%, #e63946 50%, #ff4d5a 100%) !important;
+            box-shadow: 
+                0 4px 15px rgba(206, 43, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -2px 5px rgba(139, 0, 0, 0.3) !important;
+        }
+        .btn-login:hover {
+            background: linear-gradient(135deg, #a02029 0%, #ce2b37 50%, #e63946 100%) !important;
+            box-shadow: 
+                0 8px 25px rgba(206, 43, 55, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -2px 5px rgba(139, 0, 0, 0.3) !important;
+        }
+
+        /* Навигация БЕЗ смайликов */
         .nav { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .nav button { flex: 1; min-width: 140px; background: linear-gradient(135deg, #74c69d 0%, #95d5b2 100%); }
+        .nav button { flex: 1; min-width: 120px; background: linear-gradient(135deg, #74c69d 0%, #95d5b2 100%); }
         .nav button.active { 
             background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
             box-shadow: 0 4px 15px rgba(27, 67, 50, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -142,6 +159,166 @@
         .msg.info { color: #2d6a4f; }
         
         hr { border: none; border-top: 1px solid rgba(45, 106, 79, 0.2); margin: 25px 0; }
+
+        /* ПОЛНОЭКРАННОЕ МОДАЛЬНОЕ ОКНО ДЛЯ ИГРЫ */
+        .game-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d4edda 0%, #a8d5ba 50%, #c8e6c9 100%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .game-modal-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .game-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        .game-modal-close {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            color: #1b4332;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .game-modal-close:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: rotate(90deg);
+        }
+        .game-task-box {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(27, 67, 50, 0.2);
+        }
+        .game-task-label {
+            font-size: 18px;
+            color: #2d6a4f;
+            margin-bottom: 15px;
+        }
+        .game-task-word {
+            font-size: 48px;
+            color: #1b4332;
+            font-weight: bold;
+            margin: 0;
+        }
+        .game-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-feedback {
+            text-align: center;
+            margin: 20px 0;
+            min-height: 40px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .game-progress {
+            text-align: center;
+            color: #2d6a4f;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .game-result {
+            text-align: center;
+            padding: 40px;
+        }
+        .game-result h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .game-result-score {
+            font-size: 24px;
+            color: #2d6a4f;
+            margin-bottom: 30px;
+        }
+
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 0; }
+            .card { padding: 20px; border-radius: 15px; }
+            
+            h2 { font-size: 24px; }
+            h3 { font-size: 20px; }
+            
+            .nav { gap: 8px; }
+            .nav button { 
+                min-width: 100%; 
+                padding: 10px 15px; 
+                font-size: 14px;
+            }
+            
+            .login-screen { margin: 20px auto; max-width: 100%; }
+            .login-header h2 { font-size: 24px; }
+            
+            .game-map { 
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
+                gap: 10px; 
+            }
+            .level-card { padding: 15px; }
+            .level-num { font-size: 22px; }
+            .level-block { font-size: 11px; }
+            
+            .list-item { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 10px;
+            }
+            .list-item button { width: 100%; }
+            
+            input, textarea, select { font-size: 16px; padding: 14px; }
+            
+            /* Мобильная версия игры */
+            .game-modal-content { padding: 15px; }
+            .game-modal-header { padding: 0 10px; margin-bottom: 20px; }
+            .game-task-box { padding: 25px; margin-bottom: 20px; }
+            .game-task-label { font-size: 16px; }
+            .game-task-word { font-size: 36px; }
+            .game-input { font-size: 20px; padding: 15px; }
+            .game-feedback { font-size: 16px; }
+            .game-result h2 { font-size: 28px; }
+            .game-result-score { font-size: 20px; }
+        }
+        
+        @media (max-width: 480px) {
+            .game-map { 
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+            }
+            .level-num { font-size: 20px; }
+            .game-task-word { font-size: 32px; }
+        }
     </style>
 </head>
 <body>
@@ -159,36 +336,36 @@
         </div>
         <input type="text" id="loginInput" placeholder="Логин">
         <input type="password" id="passInput" placeholder="Пароль">
-        <button onclick="doLogin()" style="width: 100%;">Войти</button>
+        <button onclick="doLogin()" class="btn-login" style="width: 100%;">Войти</button>
         <p id="loginError" class="msg"></p>
     </div>
 
     <div id="cabinet" class="hidden">
         <div class="nav">
-            <button onclick="showSection('game')" id="btn-game" class="active">🎮 Игра</button>
-            <button onclick="showSection('lessons')" id="btn-lessons">📚 Уроки</button>
-            <button onclick="showSection('materials')" id="btn-materials">📝 Материалы</button>
-            <button onclick="showSection('admin')" id="btn-admin" class="hidden">⚙️ Админ</button>
-            <button onclick="logout()" style="background: linear-gradient(135deg, #95d5b2, #b7e4c7);">🚪 Выйти</button>
+            <button onclick="showSection('game')" id="btn-game" class="active">Игра</button>
+            <button onclick="showSection('lessons')" id="btn-lessons">Уроки</button>
+            <button onclick="showSection('materials')" id="btn-materials">Материалы</button>
+            <button onclick="showSection('admin')" id="btn-admin" class="hidden">Админ</button>
+            <button onclick="logout()" style="background: linear-gradient(135deg, #95d5b2, #b7e4c7);">Выйти</button>
         </div>
 
         <div id="section-game" class="card">
-            <h2>🎮 Карта уровней</h2>
+            <h2>Карта уровней</h2>
             <div class="game-map" id="gameMapContainer"></div>
         </div>
 
         <div id="section-lessons" class="card hidden">
-            <h2>📚 Уроки</h2>
+            <h2>Уроки</h2>
             <div id="lessonsList"></div>
         </div>
 
         <div id="section-materials" class="card hidden">
-            <h2>📝 Конспекты и материалы</h2>
+            <h2>Конспекты и материалы</h2>
             <div id="materialsList"></div>
         </div>
 
         <div id="section-admin" class="card hidden">
-            <h2>⚙️ Добавление контента</h2>
+            <h2>Добавление контента</h2>
             
             <h3>Добавить слово/задание в Игру</h3>
             <input type="number" id="addLevel" placeholder="Номер уровня (1-100)">
@@ -217,7 +394,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzGGfojhQgNSv-Z0Vg2gArFWGyh3h5cSw61kvkiC4wMliSqkb9aN4O8m5uhhKPDd86Z/exec";
+    const API_URL = "ВСТАВЬТЕ_СЮДА_НОВЫЙ_URL";
     let currentUserRole = 'user';
 
     async function doLogin() {
@@ -319,53 +496,54 @@
 
     function openLevel(levelNum, tasks) {
         const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(27, 67, 50, 0.8); display: flex; justify-content: center; align-items: center;
-            z-index: 1000;
-        `;
-        
-        const modalContent = document.createElement('div');
-        modalContent.style.cssText = `
-            background: linear-gradient(135deg, #d4edda, #a8d5ba); padding: 30px;
-            border-radius: 20px; max-width: 500px; width: 90%; max-height: 80vh;
-            overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        `;
+        modal.className = 'game-modal';
         
         let currentTaskIndex = 0;
         let score = 0;
         
         function renderTask() {
             if (currentTaskIndex >= tasks.length) {
-                modalContent.innerHTML = `
-                    <h2 style="color: #1b4332; text-align: center;">🎉 Уровень пройден!</h2>
-                    <p style="text-align: center; font-size: 18px; color: #2d6a4f;">
-                        Правильных ответов: ${score} из ${tasks.length}
-                    </p>
-                    <button onclick="this.closest('div[style]').remove()" style="width: 100%; margin-top: 20px;">Закрыть</button>
+                modal.innerHTML = `
+                    <div class="game-modal-header">
+                        <h2 style="color: #1b4332;">Уровень ${levelNum}</h2>
+                        <button class="game-modal-close" onclick="this.closest('.game-modal').remove()">✕</button>
+                    </div>
+                    <div class="game-modal-content">
+                        <div class="game-result">
+                            <h2>🎉 Уровень пройден!</h2>
+                            <div class="game-result-score">
+                                Правильных ответов: ${score} из ${tasks.length}
+                            </div>
+                            <button onclick="this.closest('.game-modal').remove()" style="width: 100%; max-width: 300px;">Закрыть</button>
+                        </div>
+                    </div>
                 `;
                 return;
             }
             
             const task = tasks[currentTaskIndex];
             
-            modalContent.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="color: #1b4332; margin: 0;">Уровень ${levelNum}</h2>
-                    <span style="color: #2d6a4f; font-size: 14px;">Задание ${currentTaskIndex + 1} из ${tasks.length}</span>
+            modal.innerHTML = `
+                <div class="game-modal-header">
+                    <h2 style="color: #1b4332;">Уровень ${levelNum}</h2>
+                    <button class="game-modal-close" onclick="this.closest('.game-modal').remove()">✕</button>
                 </div>
-                
-                <div style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
-                    <p style="font-size: 16px; color: #2d6a4f; margin: 0 0 10px 0;">Напишите по-итальянски:</p>
-                    <p style="font-size: 32px; color: #1b4332; font-weight: bold; margin: 0;">${task.task}</p>
+                <div class="game-modal-content">
+                    <div class="game-progress">
+                        Задание ${currentTaskIndex + 1} из ${tasks.length}
+                    </div>
+                    
+                    <div class="game-task-box">
+                        <div class="game-task-label">Напишите по-итальянски:</div>
+                        <p class="game-task-word">${task.task}</p>
+                    </div>
+                    
+                    <input type="text" id="userAnswer" class="game-input" placeholder="Введите слово на итальянском...">
+                    
+                    <div id="feedback" class="game-feedback"></div>
+                    
+                    <button onclick="checkAnswer()" style="width: 100%; max-width: 300px;">Проверить</button>
                 </div>
-                
-                <input type="text" id="userAnswer" placeholder="Введите слово на итальянском..." 
-                       style="width: 100%; padding: 15px; font-size: 18px; text-align: center;">
-                
-                <div id="feedback" style="text-align: center; margin: 15px 0; min-height: 30px;"></div>
-                
-                <button onclick="checkAnswer()" style="width: 100%;">Проверить</button>
             `;
             
             setTimeout(() => document.getElementById('userAnswer').focus(), 100);
@@ -382,21 +560,15 @@
             
             if (userAnswer === correctAnswer) {
                 score++;
-                feedback.innerHTML = '<span style="color: #1b4332; font-weight: bold;">✅ Правильно!</span>';
+                feedback.innerHTML = '<span style="color: #1b4332;">✅ Правильно!</span>';
                 setTimeout(() => { currentTaskIndex++; renderTask(); }, 1000);
             } else {
-                feedback.innerHTML = `<span style="color: #ce2b37; font-weight: bold;">❌ Неправильно. Правильный ответ: <b>${tasks[currentTaskIndex].word}</b></span>`;
+                feedback.innerHTML = `<span style="color: #ce2b37;">❌ Неправильно. Правильный ответ: <b>${tasks[currentTaskIndex].word}</b></span>`;
                 setTimeout(() => { currentTaskIndex++; renderTask(); }, 2000);
             }
         };
         
-        modal.appendChild(modalContent);
         document.body.appendChild(modal);
-        
-        modal.onclick = (e) => {
-            if (e.target === modal) modal.remove();
-        };
-        
         renderTask();
     }
 
