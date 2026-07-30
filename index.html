@@ -5,44 +5,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Учебная Платформа</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; margin: 0; padding: 20px; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #d4edda 0%, #a8d5ba 50%, #c8e6c9 100%);
+            color: #1b4332; 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+        }
         .container { max-width: 1000px; margin: 0 auto; }
         .hidden { display: none !important; }
         
-        /* Формы */
-        .card { background: #16213e; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 20px; }
-        input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; background: #0f3460; border: 1px solid #e94560; color: #fff; border-radius: 5px; box-sizing: border-box; }
-        button { background: #e94560; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #ff2e63; }
+        h1, h2, h3 { color: #1b4332; }
+        
+        /* Карточки */
+        .card { 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(10px);
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(27, 67, 50, 0.15); 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Поля ввода */
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: rgba(255, 255, 255, 0.8); 
+            border: 2px solid #a8d5ba; 
+            color: #1b4332; 
+            border-radius: 10px; 
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.2);
+        }
+        input::placeholder, textarea::placeholder { color: #74a892; }
+
+        /* 🪞 ЗЕРКАЛЬНЫЕ КНОПКИ */
+        button { 
+            position: relative;
+            background: linear-gradient(135deg, #52b788 0%, #74c69d 50%, #95d5b2 100%);
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 15px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 15px rgba(45, 106, 79, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -2px 5px rgba(27, 67, 50, 0.2);
+            text-shadow: 0 1px 2px rgba(27, 67, 50, 0.3);
+        }
+        /* Зеркальный блик */
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.5),
+                transparent
+            );
+            transition: left 0.6s ease;
+        }
+        button:hover::before {
+            left: 100%;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 25px rgba(45, 106, 79, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -2px 5px rgba(27, 67, 50, 0.2);
+            background: linear-gradient(135deg, #40916c 0%, #52b788 50%, #74c69d 100%);
+        }
+        button:active {
+            transform: translateY(0);
+        }
 
         /* Меню */
-        .nav { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .nav button { background: #0f3460; flex: 1; }
-        .nav button.active { background: #e94560; }
+        .nav { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav button { 
+            flex: 1; 
+            min-width: 140px;
+            background: linear-gradient(135deg, #74c69d 0%, #95d5b2 100%);
+        }
+        .nav button.active { 
+            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+            box-shadow: 
+                0 4px 15px rgba(27, 67, 50, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
 
-        /* Карта игры (адаптация вашего файла) */
-        .game-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
-        .level-card { background: #0f3460; padding: 20px; text-align: center; border-radius: 10px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
-        .level-card:hover { transform: translateY(-5px); border-color: #e94560; }
-        .level-card.locked { background: #2a2a40; color: #666; cursor: not-allowed; }
-        .level-num { font-size: 24px; font-weight: bold; }
-        .level-block { font-size: 12px; color: #aaa; margin-top: 5px;}
+        /* 🇮🇹 ФЛАГ ИТАЛИИ на экране входа */
+        .login-screen {
+            max-width: 420px; 
+            margin: 50px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .italy-flag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            display: flex;
+            border-radius: 20px 20px 0 0;
+        }
+        .italy-flag div { flex: 1; }
+        .italy-flag .green { background: #009246; }
+        .italy-flag .white { background: #ffffff; }
+        .italy-flag .red { background: #ce2b37; }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-top: 15px;
+        }
+        .login-header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .login-header .subtitle {
+            color: #2d6a4f;
+            font-size: 14px;
+            margin-top: 5px;
+        }
 
-        /* Списки уроков и материалов */
-        .list-item { background: #0f3460; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .list-item a { color: #4bcffa; text-decoration: none; font-weight: bold; }
+        /* Карта игры */
+        .game-map { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 15px; 
+        }
+        .level-card { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(168, 213, 186, 0.6));
+            padding: 20px; 
+            text-align: center; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            border: 2px solid rgba(116, 198, 157, 0.3);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.1);
+        }
+        .level-card:hover { 
+            transform: translateY(-5px); 
+            border-color: #2d6a4f;
+            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.25);
+        }
+        .level-card.locked { 
+            background: rgba(200, 200, 200, 0.4); 
+            color: #999; 
+            cursor: not-allowed; 
+        }
+        .level-card.locked:hover { transform: none; border-color: rgba(116, 198, 157, 0.3); }
+        .level-num { font-size: 26px; font-weight: bold; color: #1b4332; }
+        .level-block { font-size: 12px; color: #2d6a4f; margin-top: 5px; }
+
+        /* Списки */
+        .list-item { 
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px 20px; 
+            border-radius: 10px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-left: 4px solid #52b788;
+        }
+
+        /* Сообщение об ошибке/успехе */
+        .msg { text-align: center; margin-top: 15px; font-weight: 500; }
+        .msg.success { color: #1b4332; }
+        .msg.error { color: #ce2b37; }
+        .msg.info { color: #2d6a4f; }
+        
+        hr { border: none; border-top: 1px solid rgba(45, 106, 79, 0.2); margin: 25px 0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- ЭКРАН ЛОГИНА -->
-    <div id="loginScreen" class="card" style="max-width: 400px; margin: 50px auto;">
-        <h2>Вход в систему</h2>
+    <!-- ЭКРАН ЛОГИНА С ФЛАГОМ ИТАЛИИ -->
+    <div id="loginScreen" class="card login-screen">
+        <div class="italy-flag">
+            <div class="green"></div>
+            <div class="white"></div>
+            <div class="red"></div>
+        </div>
+        <div class="login-header">
+            <h2>🇮🇹 Benvenuti!</h2>
+            <div class="subtitle">Вход в учебную платформу</div>
+        </div>
         <input type="text" id="loginInput" placeholder="Логин">
         <input type="password" id="passInput" placeholder="Пароль">
-        <button onclick="doLogin()">Войти</button>
-        <p id="loginError" style="color: red; text-align: center;"></p>
+        <button onclick="doLogin()" style="width: 100%;">Войти</button>
+        <p id="loginError" class="msg"></p>
     </div>
 
     <!-- ЛИЧНЫЙ КАБИНЕТ -->
@@ -51,16 +226,14 @@
             <button onclick="showSection('game')" id="btn-game" class="active">🎮 Игра</button>
             <button onclick="showSection('lessons')" id="btn-lessons">📚 Уроки</button>
             <button onclick="showSection('materials')" id="btn-materials">📝 Материалы</button>
-            <button onclick="showSection('admin')" id="btn-admin">⚙️ Админ (Добавить)</button>
-            <button onclick="logout()" style="background: #555;">Выйти</button>
+            <button onclick="showSection('admin')" id="btn-admin" class="hidden">⚙️ Админ</button>
+            <button onclick="logout()" style="background: linear-gradient(135deg, #95d5b2, #b7e4c7);">🚪 Выйти</button>
         </div>
 
         <!-- РАЗДЕЛ ИГРА -->
         <div id="section-game" class="card">
             <h2>🎮 Карта уровней</h2>
-            <div class="game-map" id="gameMapContainer">
-                <!-- Уровни подгрузятся сюда -->
-            </div>
+            <div class="game-map" id="gameMapContainer"></div>
         </div>
 
         <!-- РАЗДЕЛ УРОКИ -->
@@ -75,7 +248,7 @@
             <div id="materialsList"></div>
         </div>
 
-        <!-- АДМИН ПАНЕЛЬ (ОТВЕТ НА ВОПРОС "КУДА ДОБАВЛЯТЬ?") -->
+        <!-- АДМИН-ПАНЕЛЬ (только для role = admin) -->
         <div id="section-admin" class="card hidden">
             <h2>⚙️ Добавление контента</h2>
             
@@ -85,81 +258,101 @@
             <input type="text" id="addWord" placeholder="Слово / Вопрос">
             <input type="text" id="addTask" placeholder="Задание / Перевод">
             <button onclick="addContent('addGameContent', ['addLevel', 'addBlock', 'addWord', 'addTask'])">Добавить в игру</button>
-            <hr style="border-color: #333; margin: 20px 0;">
-
+            
+            <hr>
+            
             <h3>Добавить Урок (ссылка на Диск)</h3>
             <input type="text" id="addLessonTitle" placeholder="Название урока">
             <input type="text" id="addLessonLink" placeholder="Ссылка на Google Диск">
             <button onclick="addContent('addLesson', ['addLessonTitle', 'addLessonLink'])">Добавить урок</button>
-            <hr style="border-color: #333; margin: 20px 0;">
-
+            
+            <hr>
+            
             <h3>Добавить Материал (Конспект)</h3>
             <input type="text" id="addMatTitle" placeholder="Заголовок конспекта">
             <textarea id="addMatContent" placeholder="Текст конспекта" rows="4"></textarea>
             <button onclick="addContent('addMaterial', ['addMatTitle', 'addMatContent'])">Добавить материал</button>
             
-            <p id="adminMsg" style="color: #4bcffa; margin-top: 15px;"></p>
+            <p id="adminMsg" class="msg info"></p>
         </div>
     </div>
 </div>
 
 <script>
-    // ВСТАВЬТЕ СЮДА URL ВАШЕГО ВЕБ-ПРИЛОЖЕНИЯ ИЗ GOOGLE APPS SCRIPT
-    const API_URL = "https://script.google.com/macros/s/AKfycbzFuMNUX6dFmx6qe7Kh8EG9RngtyBvgdJ3ycu9rpXnumFEOR5rGHe7UY4hJB9qSgf-I2w/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxDHX6n3EQg4832O68YynZJ74FZ0PV4rs3uqvlso4XSqw7SU4mFg_sCjRxpQGFFtekLyg/exec";
+    let currentUserRole = 'user'; // по умолчанию обычный пользователь
 
     // --- ЛОГИКА АВТОРИЗАЦИИ ---
     async function doLogin() {
-    const login = document.getElementById('loginInput').value;
-    const pass = document.getElementById('passInput').value;
-    const errorBox = document.getElementById('loginError');
-    
-    errorBox.innerText = '⏳ Проверяю...';
-    errorBox.style.color = '#4bcffa';
-    
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'login', login, password: pass })
-        });
-        const text = await response.text();
-        console.log('Сырой ответ от сервера:', text); // для консоли
+        const login = document.getElementById('loginInput').value;
+        const pass = document.getElementById('passInput').value;
+        const errorBox = document.getElementById('loginError');
         
-        let res;
+        errorBox.innerText = '⏳ Проверяю...';
+        errorBox.className = 'msg info';
+        
         try {
-            res = JSON.parse(text);
-        } catch(e) {
-            errorBox.style.color = 'red';
-            errorBox.innerText = '❌ Сервер вернул не JSON. Проверьте URL (должен заканчиваться на /exec) и доступ "Все".\n\nОтвет: ' + text.substring(0, 200);
-            return;
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', login, password: pass })
+            });
+            const res = await response.json();
+            
+            if (res.success) {
+                errorBox.innerText = '✅ ' + res.message;
+                errorBox.className = 'msg success';
+                
+                // Сохраняем роль пользователя
+                currentUserRole = res.role || 'user';
+                
+                setTimeout(() => {
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('cabinet').classList.remove('hidden');
+                    
+                    // Показываем кнопку "Админ" только если роль = admin
+                    if (currentUserRole === 'admin') {
+                        document.getElementById('btn-admin').classList.remove('hidden');
+                    } else {
+                        document.getElementById('btn-admin').classList.add('hidden');
+                    }
+                    
+                    showSection('game');
+                }, 600);
+            } else {
+                errorBox.innerText = '❌ ' + res.message;
+                errorBox.className = 'msg error';
+            }
+        } catch (e) {
+            errorBox.innerText = '❌ Ошибка сети: ' + e.message;
+            errorBox.className = 'msg error';
         }
-        
-        if (res.success) {
-            errorBox.style.color = 'green';
-            errorBox.innerText = res.message;
-            setTimeout(() => {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('cabinet').classList.remove('hidden');
-                showSection('game');
-            }, 800);
-        } else {
-            errorBox.style.color = 'red';
-            errorBox.innerText = res.message;
-        }
-    } catch (e) {
-        errorBox.style.color = 'red';
-        errorBox.innerText = '❌ Ошибка сети: ' + e.message + '\n\nПроверьте:\n1. Правильность URL\n2. Доступ "Все" в настройках развертывания';
     }
-}
 
+    function logout() {
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('cabinet').classList.add('hidden');
+        document.getElementById('loginInput').value = '';
+        document.getElementById('passInput').value = '';
+        document.getElementById('loginError').innerText = '';
+        currentUserRole = 'user';
+    }
 
     // --- НАВИГАЦИЯ ---
     function showSection(name) {
+        // Защита: если пытаются открыть админку без прав
+        if (name === 'admin' && currentUserRole !== 'admin') {
+            alert('⛔ У вас нет доступа к админ-панели');
+            return;
+        }
+        
         ['game', 'lessons', 'materials', 'admin'].forEach(s => {
             document.getElementById('section-' + s).classList.add('hidden');
-            document.getElementById('btn-' + s).classList.remove('active');
+            const btn = document.getElementById('btn-' + s);
+            if (btn) btn.classList.remove('active');
         });
         document.getElementById('section-' + name).classList.remove('hidden');
-        document.getElementById('btn-' + name).classList.add('active');
+        const activeBtn = document.getElementById('btn-' + name);
+        if (activeBtn) activeBtn.classList.add('active');
 
         if (name === 'game') loadGameMap();
         if (name === 'lessons') loadList('Lessons', 'lessonsList', 'lesson');
@@ -172,9 +365,7 @@
         const container = document.getElementById('gameMapContainer');
         container.innerHTML = '';
         
-        // Генерируем 100 уровней (как в вашем файле)
         for (let i = 1; i <= 100; i++) {
-            // Ищем задания для этого уровня в таблице
             const levelTasks = res.data.filter(d => parseInt(d.level) === i);
             const hasTasks = levelTasks.length > 0;
             
@@ -182,10 +373,10 @@
             card.className = `level-card ${hasTasks ? '' : 'locked'}`;
             card.innerHTML = `
                 <div class="level-num">${i}</div>
-                <div class="level-block">${hasTasks ? levelTasks[0].block : 'Закрыто'}</div>
+                <div class="level-block">${hasTasks ? levelTasks[0].block : '🔒 Закрыто'}</div>
             `;
             if(hasTasks) {
-                card.onclick = () => alert(`Уровень ${i}\nСлова: ${levelTasks.map(t=>t.word).join(', ')}`);
+                card.onclick = () => alert(`Уровень ${i}\nБлок: ${levelTasks[0].block}\nСлова: ${levelTasks.map(t=>t.word).join(', ')}`);
             }
             container.appendChild(card);
         }
@@ -196,46 +387,43 @@
         const container = document.getElementById(containerId);
         container.innerHTML = '';
         
+        if (res.data.length === 0) {
+            container.innerHTML = '<p style="color: #74a892; text-align: center;">Пока ничего не добавлено</p>';
+            return;
+        }
+        
         res.data.forEach(item => {
             const div = document.createElement('div');
             div.className = 'list-item';
             if (type === 'lesson') {
-                div.innerHTML = `<span>${item.title}</span> <a href="${item.link}" target="_blank"><button>Открыть</button></a>`;
+                div.innerHTML = `<span><b>${item.title}</b></span> <a href="${item.link}" target="_blank"><button>Открыть</button></a>`;
             } else {
-                div.innerHTML = `<div><b>${item.title}</b><br><small>${item.content}</small></div>`;
+                div.innerHTML = `<div><b>${item.title}</b><br><small style="color: #2d6a4f;">${item.content}</small></div>`;
             }
             container.appendChild(div);
         });
     }
 
-    // --- ДОБАВЛЕНИЕ КОНТЕНТА (АДМИНКА) ---
+    // --- ДОБАВЛЕНИЕ КОНТЕНТА ---
     async function addContent(action, fields) {
         let payload = { action };
-        fields.forEach(f => payload[f.replace('add', '').toLowerCase()] = document.getElementById(f).value);
-        
-        // Чистим имена полей для бэкенда (упрощение)
         if(action === 'addGameContent') payload = { action, level: document.getElementById('addLevel').value, block: document.getElementById('addBlock').value, word: document.getElementById('addWord').value, task: document.getElementById('addTask').value };
         if(action === 'addLesson') payload = { action, title: document.getElementById('addLessonTitle').value, link: document.getElementById('addLessonLink').value };
         if(action === 'addMaterial') payload = { action, title: document.getElementById('addMatTitle').value, content: document.getElementById('addMatContent').value };
 
         const res = await fetchAPI(payload);
-        document.getElementById('adminMsg').innerText = res.message || 'Готово!';
+        document.getElementById('adminMsg').innerText = '✅ ' + (res.message || 'Готово!');
         
-        // Очищаем поля
         fields.forEach(f => document.getElementById(f).value = '');
     }
 
-    // --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ЗАПРОСА ---
     async function fetchAPI(payload) {
         try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
+            const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
             return await response.json();
         } catch (e) {
             console.error(e);
-            return { success: false, message: 'Ошибка сети. Проверьте URL API.' };
+            return { success: false, message: 'Ошибка сети', data: [] };
         }
     }
 </script>
