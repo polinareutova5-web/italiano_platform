@@ -433,8 +433,27 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwoBcpOHbsYIyrogIEbNO8Hz05Go_2EhfTl0KcKBNi1Y9-fVQdSZ3M59-RR6EETTVgi1Q/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzGGfojhQgNSv-Z0Vg2gArFWGyh3h5cSw61kvkiC4wMliSqkb9aN4O8m5uhhKPDd86Z/exec";
     let currentUserRole = 'user';
+
+    // 1. ПРОВЕРКА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ (чтобы не выбрасывало при обновлении)
+    window.addEventListener('DOMContentLoaded', () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const savedRole = localStorage.getItem('userRole');
+        
+        if (isLoggedIn === 'true' && savedRole) {
+            currentUserRole = savedRole;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('cabinet').classList.remove('hidden');
+            
+            if (currentUserRole === 'admin') {
+                document.getElementById('btn-admin').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-admin').classList.add('hidden');
+            }
+            showSection('game');
+        }
+    });
 
     async function doLogin() {
         const login = document.getElementById('loginInput').value;
@@ -456,7 +475,7 @@
                 res = JSON.parse(text);
             } catch(e) {
                 errorBox.className = 'msg error';
-                errorBox.innerText = '❌ Сервер вернул не JSON!\n\nПроверьте:\n1. URL заканчивается на /exec?\n2. В настройках развертывания доступ = "Все"?\n\nОтвет сервера:\n' + text.substring(0, 300);
+                errorBox.innerText = '❌ Сервер вернул не JSON!\n\nПроверьте:\n1. URL заканчивается на /exec?\n2. В настройках развертывания доступ = "Все"?';
                 return;
             }
             
@@ -465,6 +484,11 @@
             
             if (res.success) {
                 currentUserRole = res.role || 'user';
+                
+                // 2. СОХРАНЯЕМ ВХОД В ПАМЯТЬ БРАУЗЕРА
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', currentUserRole);
+                
                 setTimeout(() => {
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('cabinet').classList.remove('hidden');
@@ -474,7 +498,7 @@
                         document.getElementById('btn-admin').classList.add('hidden');
                     }
                     showSection('game');
-                }, 1000);
+                }, 800);
             }
         } catch (e) {
             errorBox.className = 'msg error';
@@ -483,6 +507,10 @@
     }
 
     function logout() {
+        // 3. ОЧИЩАЕМ ПАМЯТЬ ПРИ ВЫХОДЕ
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userRole');
+        
         document.getElementById('loginScreen').classList.remove('hidden');
         document.getElementById('cabinet').classList.add('hidden');
         document.getElementById('loginInput').value = '';
@@ -540,12 +568,10 @@
         let currentTaskIndex = 0;
         let score = 0;
         
-        // Функция для генерации вариантов ответа (для типа choice)
         function generateChoices(correctWord, allTasks) {
             const otherWords = allTasks
                 .filter(t => t.word.toLowerCase() !== correctWord.toLowerCase())
                 .map(t => t.word);
-            
             const shuffled = otherWords.sort(() => Math.random() - 0.5).slice(0, 3);
             shuffled.push(correctWord);
             return shuffled.sort(() => Math.random() - 0.5);
@@ -561,9 +587,7 @@
                     <div class="game-modal-content">
                         <div class="game-result">
                             <h2>🎉 Уровень пройден!</h2>
-                            <div class="game-result-score">
-                                Правильных ответов: ${score} из ${tasks.length}
-                            </div>
+                            <div class="game-result-score">Правильных ответов: ${score} из ${tasks.length}</div>
                             <button onclick="this.closest('.game-modal').remove()" style="width: 100%; max-width: 300px;">Закрыть</button>
                         </div>
                     </div>
@@ -573,7 +597,6 @@
             
             const task = tasks[currentTaskIndex];
             const taskType = (task.type || 'input').toString().trim().toLowerCase();
-            
             let taskContent = '';
             
             if (taskType === 'choice') {
@@ -581,15 +604,12 @@
                 const buttonsHtml = choices.map(word => 
                     `<button class="choice-btn" onclick="checkChoice(this, '${word.replace(/'/g, "\\'")}', '${task.word.replace(/'/g, "\\'")}')">${word}</button>`
                 ).join('');
-                
                 taskContent = `
                     <div class="game-task-box">
                         <div class="game-task-label">Выберите правильный перевод:</div>
                         <p class="game-task-word">${task.task}</p>
                     </div>
-                    <div class="choices-grid">
-                        ${buttonsHtml}
-                    </div>
+                    <div class="choices-grid">${buttonsHtml}</div>
                     <div id="feedback" class="game-feedback"></div>
                 `;
             } else {
@@ -610,9 +630,7 @@
                     <button class="game-modal-close" onclick="this.closest('.game-modal').remove()">✕</button>
                 </div>
                 <div class="game-modal-content">
-                    <div class="game-progress">
-                        Задание ${currentTaskIndex + 1} из ${tasks.length}
-                    </div>
+                    <div class="game-progress">Задание ${currentTaskIndex + 1} из ${tasks.length}</div>
                     ${taskContent}
                 </div>
             `;
@@ -668,7 +686,6 @@
                 button.style.color = 'white !important';
                 feedback.innerHTML = `<span style="color: #ce2b37;">❌ Неправильно. Правильный ответ: <b>${correct}</b></span>`;
             }
-            
             setTimeout(() => { currentTaskIndex++; renderTask(); }, 1500);
         };
         
@@ -677,28 +694,51 @@
     }
 
     async function loadList(tableName, containerId, type) {
+        console.log(`🔄 Загружаем данные из таблицы: ${tableName}`);
         const res = await fetchAPI({ action: 'getData', table: tableName });
+        console.log('📦 Ответ от сервера:', res);
+        
         const container = document.getElementById(containerId);
         container.innerHTML = '';
-        
-        if (res.data.length === 0) {
-            container.innerHTML = '<p style="color: #74a892; text-align: center;">Пока ничего не добавлено</p>';
+
+        if (!res.success) {
+            container.innerHTML = `<p style="color: #ce2b37; text-align: center;">❌ Ошибка: ${res.message}<br>Проверьте название вкладки в таблице (должно быть Lessons или Materials).</p>`;
             return;
         }
-        
+
+        if (!res.data || res.data.length === 0) {
+            container.innerHTML = '<p style="color: #74a892; text-align: center;">📭 Пока ничего не добавлено</p>';
+            return;
+        }
+
         res.data.forEach(item => {
+            console.log('📝 Элемент:', item);
             const div = document.createElement('div');
             div.className = 'list-item';
+
             if (type === 'lesson') {
-                div.innerHTML = `<span><b>${item.title}</b></span> <a href="${item.link}" target="_blank"><button>Открыть</button></a>`;
+                const title = item.title || 'Без названия (проверьте заголовок title в таблице)';
+                const link = item.link || '#';
+                div.innerHTML = `
+                    <span><b>${title}</b></span>
+                    <a href="${link}" target="_blank" style="text-decoration: none;">
+                        <button>Открыть</button>
+                    </a>
+                `;
             } else {
-                div.innerHTML = `<div><b>${item.title}</b><br><small style="color: #2d6a4f;">${item.content}</small></div>`;
+                const title = item.title || 'Без названия';
+                const content = item.content || 'Нет текста (проверьте заголовок content в таблице)';
+                div.innerHTML = `
+                    <div>
+                        <b>${title}</b><br>
+                        <small style="color: #2d6a4f; white-space: pre-wrap; margin-top: 5px; display: block;">${content}</small>
+                    </div>
+                `;
             }
             container.appendChild(div);
         });
     }
 
-    // Специальная функция для добавления игры (с типом задания)
     async function addGameContent() {
         const payload = {
             action: 'addGameContent',
@@ -713,7 +753,6 @@
         ['addLevel', 'addBlock', 'addWord', 'addTask'].forEach(id => document.getElementById(id).value = '');
     }
 
-    // Универсальная функция для уроков и материалов
     async function addContent(action, fields) {
         let payload = { action };
         if(action === 'addLesson') payload = { action, title: document.getElementById('addLessonTitle').value, link: document.getElementById('addLessonLink').value };
